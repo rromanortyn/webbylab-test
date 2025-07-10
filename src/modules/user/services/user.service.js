@@ -33,6 +33,16 @@ const userService = {
       ['password'],
     )
   },
+
+  async getUserByEmail(email) {
+    const userByEmail = await UserModel.findOne({
+      where: {
+        email,
+      },
+    })
+
+    return userByEmail
+  },
 }
 
 export default userService

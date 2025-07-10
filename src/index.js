@@ -6,6 +6,7 @@ import userRouter from './modules/user/routes/user.route.js'
 import appRoutes from './shared/consts/app-routes.js'
 import sequelizeInstance from './data/sequelize-instance.js'
 import errorHandler from './shared/middlewares/error-handler.middleware.js'
+import sessionRouter from './modules/session/routes/session.route.js'
 
 (async () => {
   try {
@@ -17,6 +18,7 @@ import errorHandler from './shared/middlewares/error-handler.middleware.js'
     app.use(express.json())
     
     app.use(appRoutes.users, userRouter)
+    app.use(appRoutes.sessions, sessionRouter)
     
     app.use(errorHandler)
     
