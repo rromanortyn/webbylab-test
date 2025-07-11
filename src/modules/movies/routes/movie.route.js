@@ -7,6 +7,8 @@ import moviePaths from '../consts/movie-paths.js'
 import getMovieByIdParamValidationSchema from '../validation-schemas/get-movie-by-id.param-validation-schema.js'
 import addMovieHeaderValidationSchema from '../validation-schemas/add-movie.header-validation-schema.js'
 import addMovieJsonValidationSchema from '../validation-schemas/add-movie.json-validation-schema.js'
+import updateMovieParamValidationSchema from '../validation-schemas/update-movie.param-validation-schema.js'
+import updateMovieJsonValidationSchema from '../validation-schemas/update-movie.json-validation-schema.js'
 
 const movieRouter = express.Router()
 
@@ -28,6 +30,17 @@ movieRouter.get(
       paramSchema: getMovieByIdParamValidationSchema,
     }),
     movieController.getMovieById,
+  ]),
+)
+
+movieRouter.patch(
+  moviePaths.$id,
+  ...wrap([
+    validateRequest({
+      paramSchema: updateMovieParamValidationSchema,
+      jsonSchema: updateMovieJsonValidationSchema,
+    }),
+    movieController.updateMovie,
   ]),
 )
 
