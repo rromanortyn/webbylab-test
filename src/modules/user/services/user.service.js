@@ -43,6 +43,12 @@ const userService = {
 
     return userByEmail
   },
+
+  async getUserById(id) {
+    const userById = await UserModel.findByPk(id)
+
+    return userById
+  },
 }
 
 export default userService

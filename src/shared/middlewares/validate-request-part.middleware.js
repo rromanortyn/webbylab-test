@@ -17,6 +17,11 @@ const validateRequestPart = async (options) => {
       data = req.body
 
       break
+
+    case 'params':
+      data = req.params
+
+      break
   
     case 'files':
       data = req.files

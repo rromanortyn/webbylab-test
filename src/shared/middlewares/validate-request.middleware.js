@@ -53,15 +53,15 @@ const validateRequest = (validationsCollection) => async (
   //   )
   // }
 
-  // if (paramSchema) {
-  //   await validateRequestPart(
-  //     {
-  //       c,
-  //       part: 'param',
-  //       schema: paramSchema,
-  //     },
-  //   )
-  // }
+  if (paramSchema) {
+    await validateRequestPart(
+      {
+        req,
+        part: 'params',
+        schema: paramSchema,
+      },
+    )
+  }
 
   next()
 }

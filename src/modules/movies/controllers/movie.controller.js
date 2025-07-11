@@ -1,0 +1,40 @@
+import addMovieUseCase from '../use-cases/add-movie.use-case.js'
+import getMovieByIdUseCase from '../use-cases/get-movie-by-id.use-case.js'
+
+const movieController = {
+  async addMovie(req, res) {
+    const {
+      title,
+      year,
+      format,
+      actors,
+    } = req.body
+
+    const useCaseOutput = await addMovieUseCase.execute({
+      title,
+      year,
+      format,
+      actors,
+    })
+
+    res
+      .status(useCaseOutput.metadata.statusCode)
+      .json(useCaseOutput.data)
+  },
+
+  async getMovieById(req, res) {
+    const {
+      id,
+    } = req.params
+
+    const useCaseOutput = await getMovieByIdUseCase.execute({
+      id,
+    })
+
+    res
+      .status(useCaseOutput.metadata.statusCode)
+      .json(useCaseOutput.data)
+  },
+}
+
+export default movieController

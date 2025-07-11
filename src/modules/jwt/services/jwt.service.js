@@ -6,6 +6,12 @@ const jwtService = {
     
     return token
   },
+
+  decodeToken(token) {
+    const decodedToken = jwt.verify(token, process.env.JWT_SECRET)
+    
+    return decodedToken
+  },
 }
 
 export default jwtService
