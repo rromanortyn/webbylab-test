@@ -9,6 +9,7 @@ import addMovieHeaderValidationSchema from '../validation-schemas/add-movie.head
 import addMovieJsonValidationSchema from '../validation-schemas/add-movie.json-validation-schema.js'
 import updateMovieParamValidationSchema from '../validation-schemas/update-movie.param-validation-schema.js'
 import updateMovieJsonValidationSchema from '../validation-schemas/update-movie.json-validation-schema.js'
+import getMoviesQueryValidationSchema from '../validation-schemas/get-movies.query-validation-schema.js'
 
 const movieRouter = express.Router()
 
@@ -20,6 +21,16 @@ movieRouter.post(
       jsonSchema: addMovieJsonValidationSchema,
     }),
     movieController.addMovie,
+  ]),
+)
+
+movieRouter.get(
+  moviePaths.root,
+  ...wrap([
+    validateRequest({
+      querySchema: getMoviesQueryValidationSchema,
+    }),
+    movieController.getMovies,
   ]),
 )
 

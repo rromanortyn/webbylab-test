@@ -1,5 +1,7 @@
 import MovieModel from '../../../data/models/movie.model.js'
 import ActorModel from '../../../data/models/actor.model.js'
+import getMoviesQueryOptions from '../utils/get-movies-query-options.js'
+import getObjectWithoutKeys from '../../../shared/utils/get-object-without-keys.js'
 
 const movieService = {
   async addMovie(input) {
@@ -46,12 +48,11 @@ const movieService = {
     }
   },
 
-  async getMovies() {
-    const movies = await MovieModel.findAll({
-      include: {
-        model: ActorModel,
-      },
-    })
+  async getMovies(input) {
+    const movies = (
+      await MovieModel.findAll(getMoviesQueryOptions(input))
+    )
+    .map((movie) => getObjectWithoutKeys(movie.dataValues, ['actors']))
 
     return movies
   },

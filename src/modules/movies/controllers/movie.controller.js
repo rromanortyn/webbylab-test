@@ -1,6 +1,7 @@
 import addMovieUseCase from '../use-cases/add-movie.use-case.js'
 import getMovieByIdUseCase from '../use-cases/get-movie-by-id.use-case.js'
 import updateMovieUseCase from '../use-cases/update-movie.use-case.js'
+import getMoviesUseCase from '../use-cases/get-movies.use-case.js'
 
 const movieController = {
   async addMovie(req, res) {
@@ -17,6 +18,14 @@ const movieController = {
       format,
       actors,
     })
+
+    res
+      .status(useCaseOutput.metadata.statusCode)
+      .json(useCaseOutput.data)
+  },
+
+  async getMovies(req, res) {
+    const useCaseOutput = await getMoviesUseCase.execute(req.query)
 
     res
       .status(useCaseOutput.metadata.statusCode)
