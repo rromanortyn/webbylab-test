@@ -1,3 +1,5 @@
+import { Op } from 'sequelize'
+
 import MovieModel from '../../../data/models/movie.model.js'
 import ActorModel from '../../../data/models/actor.model.js'
 import getMoviesQueryOptions from '../utils/get-movies-query-options.js'
@@ -47,12 +49,26 @@ const movieService = {
   },
 
   async getMovies(input) {
-    const movies = (
-      await MovieModel.findAll(getMoviesQueryOptions(input))
+    const { count: rawCount, rows } = (
+      await MovieModel.findAndCountAll(getMoviesQueryOptions(input))
     )
-    .map((movie) => getObjectWithoutKeys(movie.dataValues, ['actors']))
+    
+    const movies = rows.map((movie) => getObjectWithoutKeys(movie.dataValues, ['actors']))
 
-    return movies
+    let count
+
+    if (rawCount.length > 0) {
+      count = rawCount[0].count
+    }
+
+    else {
+      count = 0
+    }
+
+    return {
+      count,
+      movies,
+    }
   },
 
   async getMovieById(id) {
@@ -170,7 +186,11 @@ const movieService = {
     
     await throughModel.bulkCreate(joinRecords)
     
-    return createdMovies
+    return {
+      imported: createdMovies.length,
+      total: movies.length,
+      movies: createdMovies,
+    }
   },
 }
 

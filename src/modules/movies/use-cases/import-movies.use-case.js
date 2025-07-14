@@ -6,12 +6,20 @@ const importMoviesUseCase = {
       moviesFile,
     } = input
 
-    const importedMovies = await movieService.importMovies(moviesFile)
+    const {
+      imported,
+      total,
+      movies,
+    } = await movieService.importMovies(moviesFile)
 
     return {
       data: {
-        data: importedMovies,
+        data: movies,
         status: 1,
+        meta: {
+          imported,
+          total,
+        },
       },
       metadata: {
         statusCode: 200,
