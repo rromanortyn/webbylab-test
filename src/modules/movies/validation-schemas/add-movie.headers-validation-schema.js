@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-const addMovieHeaderValidationSchema = z
+const addMovieHeadersValidationSchema = z
   .object({
     'content-type': z
       .string()
@@ -12,4 +12,4 @@ const addMovieHeaderValidationSchema = z
       ),
   })
 
-export default addMovieHeaderValidationSchema
+export default addMovieHeadersValidationSchema

@@ -12,25 +12,23 @@ const movieService = {
       actors,
     } = input
 
-    const actorsModels = await Promise.all(
-      actors.map(async (actorName) => {
-        const actor = await ActorModel.findOne({
-          where: {
-            name: actorName,
-          },
-        })
+    const existingActorsModels = await ActorModel.findAll({
+      where: {
+        name: {
+          [Op.in]: actors,
+        },
+      },
+    })
 
-        if (!actor) {
-          const newActor = await ActorModel.create({
-            name: actorName,
-          })
+    const existingNames = existingActorsModels.map(a => a.name)
+    const missingNames = actors.filter(name => !existingNames.includes(name))
+    const newActorInputs = missingNames.map(name => ({ name }))
+    
+    const createdActorsModels = newActorInputs.length > 0
+      ? await ActorModel.bulkCreate(newActorInputs)
+      : []
 
-          return newActor
-        }
-
-        return actor
-      }),
-    )
+    const actorsModels = [...existingActorsModels, ...createdActorsModels]
 
     const addedMovie = await MovieModel.create({
       title,
@@ -80,18 +78,15 @@ const movieService = {
       actors,
     } = input
 
-    const movie = await MovieModel.findByPk(
-      id,
-      {
-        include: {
-          model: ActorModel,
-          as: 'actors',
-          through: {
-            attributes: [],
-          },
+    const movie = await MovieModel.findByPk(id, {
+      include: {
+        model: ActorModel,
+        as: 'actors',
+        through: {
+          attributes: [],
         },
       },
-    )
+    })
 
     if (!movie) {
       throw new Error('Movie not found')
@@ -103,40 +98,79 @@ const movieService = {
       format,
     })
 
-    let actorsModels
+    let actorsModels = null
 
     if (actors) {
-      actorsModels = await Promise.all(
-        actors.map(async (actorName) => {
-          const actor = await ActorModel.findOne({
-            where: {
-              name: actorName,
-            },
-          })
-  
-          if (!actor) {
-            const newActor = await ActorModel.create({
-              name: actorName,
-            })
-  
-            return newActor
-          }
-  
-          return actor
-        }),
-      )
-    }
+      const existingActorsModels = await ActorModel.findAll({
+        where: {
+          name: {
+            [Op.in]: actors,
+          },
+        },
+      })
 
-    if (actorsModels) {
-      const actorsIds = actorsModels.map((actor) => actor.id)
+      const existingNames = existingActorsModels.map((a) => a.name)
+      const missingNames = actors.filter((name) => !existingNames.includes(name))
+      const newActorInputs = missingNames.map((name) => ({ name }))
 
-      await updatedMovie.setActors(actorsIds)
+      const createdActorsModels = newActorInputs.length > 0
+        ? await ActorModel.bulkCreate(newActorInputs)
+        : []
+
+      actorsModels = [...existingActorsModels, ...createdActorsModels]
+
+      await updatedMovie.setActors(actorsModels.map((a) => a.id))
     }
 
     return {
       ...updatedMovie.dataValues,
       actors: actorsModels ?? movie.actors,
     }
+  },
+
+  async importMovies(moviesFile) {
+    const fileContent = moviesFile.buffer.toString('utf-8')
+    const movies = JSON.parse(fileContent)
+
+    const actorNames = [...new Set(movies.flatMap(m => m.actors || []))]
+    
+    const existingActors = await ActorModel.findAll({
+      where: { name: { [Op.in]: actorNames } }
+    })
+    
+    const existingNames = existingActors.map(a => a.name)
+    const missingNames = actorNames.filter(n => !existingNames.includes(n))
+    const newActors = missingNames.map(name => ({ name }))
+    
+    const createdActors = newActors.length
+      ? await ActorModel.bulkCreate(newActors)
+    : []
+    
+    const allActors = [...existingActors, ...createdActors]
+    const actorMap = Object.fromEntries(allActors.map(a => [a.name, a.id]))
+
+    const createdMovies = await MovieModel.bulkCreate(
+      movies.map(({ title, year, format }) => ({ title, year, format })),
+      {
+        returning: true,
+      },
+    )
+
+    const joinRecords = []
+    createdMovies.forEach((movie, idx) => {
+      (movies[idx].actors || []).forEach(name => {
+        joinRecords.push({
+          movieId: movie.id,
+          actorId: actorMap[name]
+        })
+      })
+    })
+
+    const { throughModel } = MovieModel.associations.actors
+    
+    await throughModel.bulkCreate(joinRecords)
+    
+    return createdMovies
   },
 }
 

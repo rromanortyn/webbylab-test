@@ -70,6 +70,16 @@ const movieController = {
       .status(useCaseOutput.metadata.statusCode)
       .json(useCaseOutput.data)
   },
+
+  async importMovies(req, res) {
+    const useCaseOutput = await importMoviesUseCase.execute({
+      moviesFile: req.file,
+    })
+
+    res
+      .status(useCaseOutput.metadata.statusCode)
+      .json(useCaseOutput.data)
+  },
 }
 
 export default movieController
