@@ -1,4 +1,5 @@
 import movieService from '../services/movie.service.js'
+import AppException from '../../../shared/exceptions/app.exception.js'
 
 const getMovieByIdUseCase = {
   async execute(input) {
@@ -9,7 +10,7 @@ const getMovieByIdUseCase = {
     const movie = await movieService.getMovieById(id)
 
     if (!movie) {
-      throw new Error('Movie not found')
+      throw new AppException('Movie not found')
     }
 
     return {

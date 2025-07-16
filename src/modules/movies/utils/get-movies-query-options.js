@@ -69,6 +69,7 @@ const getMoviesQueryOptions = ({
     limit,
     offset,
     distinct: true,
+    col: 'id',
     subQuery: false,
     group: ['Movie.id'],
   }

@@ -2,6 +2,8 @@ import addMovieUseCase from '../use-cases/add-movie.use-case.js'
 import getMovieByIdUseCase from '../use-cases/get-movie-by-id.use-case.js'
 import updateMovieUseCase from '../use-cases/update-movie.use-case.js'
 import getMoviesUseCase from '../use-cases/get-movies.use-case.js'
+import importMoviesUseCase from '../use-cases/import-movies.use-case.js'
+import deleteMovieUseCase from '../use-cases/delete-movie.use-case.js'
 
 const movieController = {
   async addMovie(req, res) {
@@ -74,6 +76,16 @@ const movieController = {
   async importMovies(req, res) {
     const useCaseOutput = await importMoviesUseCase.execute({
       moviesFile: req.file,
+    })
+
+    res
+      .status(useCaseOutput.metadata.statusCode)
+      .json(useCaseOutput.data)
+  },
+
+  async deleteMovie(req, res) {
+    const useCaseOutput = await deleteMovieUseCase.execute({
+      id: req.params.id,
     })
 
     res

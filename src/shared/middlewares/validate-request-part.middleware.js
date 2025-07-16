@@ -23,8 +23,8 @@ const validateRequestPart = async (options) => {
 
       break
   
-    case 'files':
-      data = req.files
+    case 'file':
+      data = req.file
 
       break
   

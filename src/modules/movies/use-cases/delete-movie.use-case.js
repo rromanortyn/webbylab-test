@@ -1,14 +1,10 @@
 import movieService from '../services/movie.service.js'
 import AppException from '../../../shared/exceptions/app.exception.js'
 
-const updateMovieUseCase = {
+const deleteMovieUseCase = {
   async execute(input) {
     const {
       id,
-      title,
-      year,
-      format,
-      actors,
     } = input
 
     const movie = await movieService.getMovieById(id)
@@ -17,17 +13,10 @@ const updateMovieUseCase = {
       throw new AppException(404, 'Movie not found')
     }
 
-    const updatedMovie = await movieService.updateMovie({
-      id,
-      title,
-      year,
-      format,
-      actors,
-    })
+    await movieService.deleteMovie(id)
 
     return {
       data: {
-        data: updatedMovie,
         status: 1,
       },
       metadata: {
@@ -37,4 +26,4 @@ const updateMovieUseCase = {
   },
 }
 
-export default updateMovieUseCase
+export default deleteMovieUseCase

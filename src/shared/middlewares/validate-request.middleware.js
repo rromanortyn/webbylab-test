@@ -7,7 +7,7 @@ const validateRequest = (validationsCollection) => async (
 ) => {
   const {
     jsonSchema,
-    filesSchema,
+    fileSchema,
     headerSchema,
     querySchema,
     paramSchema,
@@ -33,12 +33,12 @@ const validateRequest = (validationsCollection) => async (
     )
   }
 
-  if (filesSchema) {
+  if (fileSchema) {
     await validateRequestPart(
       {
         req,
-        part: 'files',
-        schema: filesSchema,
+        part: 'file',
+        schema: fileSchema,
       },
     )
   }

@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import AppException from '../exceptions/app.exception.js'
 
 const errorHandler = (
   err,
@@ -28,10 +29,20 @@ const errorHandler = (
     return
 	}
 
+  if (err instanceof AppException) {
+    res
+      .status(err.statusCode)
+      .json({
+        message: err.message,
+      })
+
+    return
+  }
+
 	res
     .status(500)
     .json({
-      error: err.message || 'Internal Server Error',
+      message: err.message || 'Internal Server Error',
     })
 }
 

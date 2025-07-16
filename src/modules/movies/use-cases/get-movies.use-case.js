@@ -3,9 +3,6 @@ import movieService from '../services/movie.service.js'
 const getMoviesUseCase = {
   async execute(input) {
     const { count, movies } = await movieService.getMovies(input)
-    const results = await movieService.getMovies(input)
-
-    console.log(results)
 
     return {
       data: {

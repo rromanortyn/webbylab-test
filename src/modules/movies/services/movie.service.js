@@ -49,21 +49,15 @@ const movieService = {
   },
 
   async getMovies(input) {
-    const { count: rawCount, rows } = (
+    const { count: groupCounts, rows } = (
       await MovieModel.findAndCountAll(getMoviesQueryOptions(input))
     )
-    
+
     const movies = rows.map((movie) => getObjectWithoutKeys(movie.dataValues, ['actors']))
 
-    let count
-
-    if (rawCount.length > 0) {
-      count = rawCount[0].count
-    }
-
-    else {
-      count = 0
-    }
+    const count = Array.isArray(groupCounts)
+      ? groupCounts.reduce((sum, g) => sum + g.count, 0)
+      : groupCounts
 
     return {
       count,
@@ -105,7 +99,7 @@ const movieService = {
     })
 
     if (!movie) {
-      throw new Error('Movie not found')
+      throw new AppException(404, 'Movie not found')
     }
 
     const updatedMovie = await movie.update({
@@ -191,6 +185,14 @@ const movieService = {
       total: movies.length,
       movies: createdMovies,
     }
+  },
+
+  async deleteMovie(id) {
+    await MovieModel.destroy({
+      where: {
+        id,
+      },
+    })
   },
 }
 

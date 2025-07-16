@@ -12,7 +12,8 @@ import updateMovieParamValidationSchema from '../validation-schemas/update-movie
 import updateMovieJsonValidationSchema from '../validation-schemas/update-movie.json-validation-schema.js'
 import getMoviesQueryValidationSchema from '../validation-schemas/get-movies.query-validation-schema.js'
 import importMoviesHeadersValidationSchema from '../validation-schemas/import-movies.headers-validation-schema.js'
-import importMoviesFormValidationSchema from '../validation-schemas/import-movies.form-validation-schema.js'
+import importMoviesFileValidationSchema from '../validation-schemas/import-movies.file-validation-schema.js'
+import deleteMovieParamValidationSchema from '../validation-schemas/delete-movie.param-validation-schema.js'
 
 const movieRouter = express.Router()
 const upload = multer({
@@ -67,9 +68,19 @@ movieRouter.post(
     upload.single('movies'),
     validateRequest({
       headerSchema: importMoviesHeadersValidationSchema,
-      formSchema: importMoviesFormValidationSchema,
+      fileSchema: importMoviesFileValidationSchema,
     }),
     movieController.importMovies,
+  ]),
+)
+
+movieRouter.delete(
+  moviePaths.$id,
+  ...wrap([
+    validateRequest({
+      paramSchema: deleteMovieParamValidationSchema,
+    }),
+    movieController.deleteMovie,
   ]),
 )
 

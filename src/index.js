@@ -42,9 +42,9 @@ import modelNames from './shared/consts/model-names.js'
   
     app.use(express.json())
     
-    app.use(appRoutes.users, userRouter)
-    app.use(appRoutes.sessions, sessionRouter)
-    app.use(appRoutes.movies, movieRouter)
+    app.use(appRoutes.v1.users, userRouter)
+    app.use(appRoutes.v1.sessions, sessionRouter)
+    app.use(appRoutes.v1.movies, movieRouter)
     
     app.use(loadUser)
     app.use(errorHandler)
